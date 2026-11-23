@@ -155,3 +155,11 @@ class App {
   cancel(r:Booking){if(confirm('Release these seats?'))this.act('cancel',{id:r.id},'Seats released.');}
 }
 bootstrapApplication(App,{providers:[provideZoneChangeDetection()]});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {
+      console.warn('Stagepass offline screen is unavailable.');
+    });
+  });
+}

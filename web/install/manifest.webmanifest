@@ -1,0 +1,14 @@
+{
+  "id": "/",
+  "name": "Stagepass Event Booking",
+  "short_name": "Stagepass",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f5fb",
+  "theme_color": "#514386",
+  "icons": [
+    { "src": "/install/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/install/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

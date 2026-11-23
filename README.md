@@ -43,6 +43,19 @@ Each command opens a PostgreSQL transaction. A transaction-scoped advisory lock 
 
 At the deadline a hold expires. Every API operation reconciles overdue holds before checking availability. Open screens subscribe to a server-sent event stream. PostgreSQL signals committed changes through LISTEN/NOTIFY. Each browser reloads its authorized data on change or reconnect and schedules a refresh at the next hold deadline. If the stream disconnects, the browser retries and polls every three seconds until it reconnects. Existing holds retain their original deadline if an organizer changes the configuration. The default duration is five minutes and the maximum is four seats. The single advisory lock deliberately limits throughput in this demo.
 
+## Security and additional features
+
+- **Server-side validation and permissions.** The API validates dates, seating grids, requested seats and booking limits. Organizers manage events. Attendees can confirm or cancel only their own reservations.
+- **Passwords and sessions.** Each password has a random salt and a scrypt verifier. Production uses Secure, HttpOnly, SameSite cookies. The database holds hashed session tokens, and logout revokes the session.
+- **Google sign-in.** Supabase OAuth uses PKCE. The production redirect to Google's sign-in screen has been verified. Verification of the return to Stagepass with a consenting Google account is pending.
+- **Live availability.** Seat maps update after holds, confirmations and cancellations. A countdown and expiry message show when an attendee's hold ends.
+- **Event recommendations.** A preference such as “mellow saxophone” is matched against the event catalog.
+- **Adjacent-seat suggestions.** Groups can choose a row preference and request seats together on the same side of the aisle. The server checks availability again when the attendee places the hold.
+
+## Install Stagepass on a phone
+
+Open [Stagepass](https://stagepass-seat-booking.vercel.app/) in a supported browser. In Android Chrome, open the browser menu and choose **Add to home screen** or **Install app**. In iPhone Safari, open **Share → Add to Home Screen**, enable **Open as Web App** if offered, and tap **Add**. Launch Stagepass from the new icon. Booking and account access require an internet connection. Opening the installed app offline displays a reconnect screen.
+
 ## Tests and demo
 
 Install Google Chrome for the Playwright browser test. Run the following commands sequentially.
