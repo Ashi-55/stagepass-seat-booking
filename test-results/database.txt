@@ -1,0 +1,124 @@
+UTC: 2026-11-23 14:48:21Z
+Command: npm test
+
+> cardy@1.0.0 test
+> node --test scripts/booking.test.mjs
+
+TAP version 13
+# Subtest: seed has 120 and 60 seats, 30 claims
+ok 1 - seed has 120 and 60 seats, 30 claims
+  ---
+  duration_ms: 14033.478
+  type: 'test'
+  ...
+# Subtest: two concurrent attendees produce one confirmed booking in each of five races
+ok 2 - two concurrent attendees produce one confirmed booking in each of five races
+  ---
+  duration_ms: 109.6151
+  type: 'test'
+  ...
+# Subtest: fixed clock releases at exact expiry
+ok 3 - fixed clock releases at exact expiry
+  ---
+  duration_ms: 14.9162
+  type: 'test'
+  ...
+# Subtest: expired hold cannot confirm
+ok 4 - expired hold cannot confirm
+  ---
+  duration_ms: 7.5273
+  type: 'test'
+  ...
+# Subtest: partial collision rolls back entire group
+ok 5 - partial collision rolls back entire group
+  ---
+  duration_ms: 16.8039
+  type: 'test'
+  ...
+# Subtest: attendee cannot edit event
+ok 6 - attendee cannot edit event
+  ---
+  duration_ms: 3.2644
+  type: 'test'
+  ...
+# Subtest: organizer cannot book
+ok 7 - organizer cannot book
+  ---
+  duration_ms: 4.6608
+  type: 'test'
+  ...
+# Subtest: configured limit and duration apply immediately
+ok 8 - configured limit and duration apply immediately
+  ---
+  duration_ms: 26.0242
+  type: 'test'
+  ...
+# Subtest: invalid event dates and dimensions rejected
+ok 9 - invalid event dates and dimensions rejected
+  ---
+  duration_ms: 14.7793
+  type: 'test'
+  ...
+# Subtest: grid cannot remove occupied seats
+ok 10 - grid cannot remove occupied seats
+  ---
+  duration_ms: 6.9042
+  type: 'test'
+  ...
+# Subtest: invalid seats rejected
+ok 11 - invalid seats rejected
+  ---
+  duration_ms: 18.6145
+  type: 'test'
+  ...
+# Subtest: history and cancellation scoped to owner
+ok 12 - history and cancellation scoped to owner
+  ---
+  duration_ms: 26.1451
+  type: 'test'
+  ...
+# Subtest: new event is bookable
+ok 13 - new event is bookable
+  ---
+  duration_ms: 25.0029
+  type: 'test'
+  ...
+# Subtest: registration cannot set organizer role; logout invalidates session
+ok 14 - registration cannot set organizer role; logout invalidates session
+  ---
+  duration_ms: 113.2866
+  type: 'test'
+  ...
+# Subtest: admin provisions organizers; only organizers can change event rules
+ok 15 - admin provisions organizers; only organizers can change event rules
+  ---
+  duration_ms: 508.5808
+  type: 'test'
+  ...
+# Subtest: Google subject keeps the same attendee and booking history across sign-ins
+ok 16 - Google subject keeps the same attendee and booking history across sign-ins
+  ---
+  duration_ms: 47.6724
+  type: 'test'
+  ...
+# Subtest: signed-out visitors can read event listings only
+ok 17 - signed-out visitors can read event listings only
+  ---
+  duration_ms: 19.7521
+  type: 'test'
+  ...
+# Subtest: PostgreSQL rejects a duplicate seat claim without going through the store
+ok 18 - PostgreSQL rejects a duplicate seat claim without going through the store
+  ---
+  duration_ms: 22.149
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17657.2801

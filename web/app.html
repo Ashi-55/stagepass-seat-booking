@@ -1,0 +1,81 @@
+<header><a class="brand" href="#events" (click)="page='events'"><i class="mark" aria-hidden="true"></i>Stagepass</a><nav>
+<button (click)="page='events'" [class.active]="page==='events'">Events</button>
+@if(state && !state.user.guest){<button (click)="page='history'" [class.active]="page==='history'">My bookings</button>}
+@if(state?.user?.role==='organizer'){<button (click)="page='manage';edit()" [class.active]="page==='manage'">Organizer</button>}
+@if(state?.user?.role==='admin'){<button (click)="openAdmin()" [class.active]="page==='admin'||page==='manage'">Admin</button>}
+</nav>@if(!state||state.user.guest){
+<div class="auth-actions"><button id="account" class="outline" (click)="showAuth(account,false)">Sign in</button>
+<button class="signup" (click)="showAuth(account,true)">Sign up</button></div>
+}@else{<button id="account" class="outline" (click)="account.showModal()">{{state.user.name}}</button>}</header>
+<main>@if(message){<div id="notice" role="status">{{message}}</div>}
+@if(page==='events' && !state && !message){<p role="status">Loading events…</p>}
+@if(state && page==='events' && state.user.guest){
+<section class="agenda" aria-label="Upcoming events">
+  <h1>Event agenda</h1>
+  @if(agendaDays.length){
+    <form class="discovery" (ngSubmit)="submittedPreference=preference.trim()">
+      <label for="preference">Find an event for me</label>
+      <div><input id="preference" name="preference" maxlength="180" [(ngModel)]="preference" (ngModelChange)="submittedPreference=''" placeholder="Try mellow jazz or stand-up comedy"><button class="book-event" [disabled]="!preference.trim()">Find a match</button></div>
+      @if(submittedPreference){<p role="status">@if(recommended; as match){Suggested event · <strong>{{match.name}}</strong> <button type="button" class="secondary" (click)="pick(match.id);showAuth(account,false)">Book {{match.name}}</button>}@else{No match for these dates. Try a genre, instrument or venue.}</p>}
+    </form>
+    <div class="day-strip" role="group" aria-label="Filter events by date">
+      <button class="day-option all-days" [attr.aria-pressed]="agendaDate===0" (click)="agendaDate=0">All dates</button>
+      @for(day of agendaDays;track day.date){
+        <button class="day-option" [attr.aria-label]="day.date|date:'fullDate'" [attr.aria-pressed]="agendaDate===day.date" (click)="agendaDate=day.date">
+          <small>{{day.date|date:'EEE'}}</small><strong>{{day.date|date:'d MMM'}}</strong>
+        </button>
+      }
+    </div>
+    @for(day of agendaDays;track day.date){
+      @if(!agendaDate||agendaDate===day.date){
+        <section class="agenda-group">
+          <h2>{{day.date|date:'EEEE, d MMMM y'}}</h2>
+          @for(show of day.events;track show.id){
+            <article class="event-card agenda-card">
+              <div class="agenda-photo" [style.--image]="photoFor(show)" aria-hidden="true"></div>
+              <div class="agenda-detail"><span class="agenda-time">{{show.date*1000|date:'shortTime'}} · {{show.genre}}</span>
+              <h3>{{show.name}}</h3><p>{{show.venue}}</p></div>
+              <button class="book-event" (click)="pick(show.id);showAuth(account,false)" [attr.aria-label]="'Book '+show.name">Book</button>
+            </article>
+          }
+        </section>
+      }
+    }
+  }@else{<p>No upcoming events.</p>}
+</section>
+}
+@if(state && page==='events' && !state.user.guest){
+<div class="eventbar"><span>Events <b>/</b> Seat booking</span><label>Event <select [ngModel]="eventId" (ngModelChange)="pick($event)">@for(e of state.events;track e.id){<option [ngValue]="e.id">{{e.name}}</option>}</select></label></div>
+@if(event; as e){
+<div class="hero" [style.--image]="photoFor(e)"><div class="heroText"><span class="tag">{{e.genre}} / Live</span><h1>{{e.name}}</h1><div id="details"><span>◷ {{e.date*1000|date:'medium'}}</span><span>⌖ {{e.venue}}</span></div></div></div>
+<div class="layout"><section class="panel map"><div class="mapHead"><div><h2>Choose your seats</h2></div><span class="live">{{e.rows*e.cols-seats.size}} available</span></div>
+<div class="legend"><span><i></i>Available</span><span><i class="selected"></i>Selected</span><span><i class="held"></i>Held</span><span><i class="booked"></i>Booked</span></div>
+<div class="theatre"><div class="stage">S T A G E</div><div id="grid" [style.grid-template-columns]="'max-content repeat('+e.cols+',max-content)'">
+@for(row of rows;track row){<span class="rowletter">{{row}}</span>@for(col of cols;track col){@let seat=row+col;<button [class]="'seat '+(seats.get(seat)||(selected.includes(seat)?'selected':''))" [style.margin-left.px]="col===1+(e.cols+1 - (e.cols+1)%2)/2?6:0" [attr.aria-label]="seat+', '+(seats.get(seat)||'available')" [attr.aria-pressed]="selected.includes(seat)" [disabled]="busy||seats.has(seat)||!!active||state.user.role!=='attendee'" (click)="toggle(seat)">{{col}}</button>}}
+</div></div></section><aside class="panel summary"><h2>Booking summary</h2><div class="row"><span>Event</span><strong>{{e.name}}</strong></div><div class="row"><span>Venue</span><strong>{{e.venue}}</strong></div><div class="row"><span>Booking limit</span><strong>{{active?.seats?.length || selected.length}} / {{e.maximum}} selected</strong></div>
+@if(state.user.role==='attendee' && !active){
+<fieldset class="seat-suggest"><legend>Find seats together</legend><label>Group size<input type="number" min="1" [max]="e.maximum" [(ngModel)]="partySize"></label><label>Preferred rows<select [(ngModel)]="zone"><option>Front</option><option>Middle</option><option>Back</option></select></label><button class="secondary" (click)="suggest()">Suggest seats</button></fieldset>}
+<div class="ticket"><strong>{{(active?.seats||selected).join(' · ')||'No seats selected'}}</strong><small>{{active?'Held for you · '+remaining+' remaining':'Choose seats on the venue map.'}}</small></div>
+@if(active;as hold){<button class="primary" [disabled]="busy" (click)="act('confirm',{id:hold.id},'Booking confirmed.')">Confirm booking</button><button class="secondary" (click)="act('cancel',{id:hold.id},'Seats released.')">Release hold</button>}
+@else{<button class="primary" [disabled]="!selected.length||busy" (click)="act('hold',{event:e.id,seats:selected},'Your seats are on hold.')">Hold seats</button><p class="note">Seats are held for {{e.minutes}} minutes.</p>}</aside></div>
+}@else{<h1>No upcoming events</h1>}}
+@if(state && !state.user.guest && page==='history'){<h1>My bookings</h1>@for(r of state?.history;track r.id){<article class="panel historyItem booking-pass"><div class="row"><p class="status-label" [attr.data-status]="r.status">{{r.status|uppercase}}</p><small>SP-{{r.id}}</small></div><h2>{{r.name}}</h2><p>{{r.date*1000|date:'medium'}} · {{r.venue}}</p><strong>Seats {{r.seats.join(', ')}}</strong><br>@if(r.status==='held'||r.status==='booked'){<button class="secondary" (click)="cancel(r)">Cancel {{r.status==='held'?'hold':'booking'}}</button>}</article>}@empty{<div class="panel"><h2>No bookings yet</h2><button class="secondary" (click)="page='events'">Browse events</button></div>}}
+@if(page==='admin' && state?.user?.role==='admin'){
+  <h1>Admin panel</h1><div class="admin-layout">
+  <section class="panel formPanel historyItem">
+    <h2>Accounts</h2>
+    @for(person of accounts;track person.id){<div class="row"><span>{{person.name}}</span><strong>{{person.role}}</strong></div>}
+  </section>
+  <section class="panel formPanel">
+    <h2>Create organizer</h2>
+    <form (ngSubmit)="createOrganizer()" #newOrganizer="ngForm">
+      <label>Organizer name<input required maxlength="64" name="organizerName" [(ngModel)]="organizerName"></label>
+      <label>Organizer password<input type="password" required minlength="8" maxlength="256" autocomplete="new-password" name="organizerPassword" [(ngModel)]="organizerPassword"></label>
+      <button class="primary" [disabled]="busy||newOrganizer.invalid">Create organizer</button>
+    </form>
+  </section></div>
+}
+@if(page==='manage' && state?.user?.role==='organizer'){<p class="overline">{{state?.user?.role|uppercase}}</p><h1>Event setup</h1><div class="panel formPanel setup-panel"><label>Manage event<select [(ngModel)]="editId" (ngModelChange)="edit()"><option [ngValue]="0">Create event</option>@for(e of state?.events;track e.id){<option [ngValue]="e.id">{{e.name}}</option>}</select></label>
+<form (input)="dirty=true" (ngSubmit)="save()" #setup="ngForm">
+<fieldset><legend>Event details</legend><label>Event name<input name="name" required [(ngModel)]="form.name"></label><label>Venue<input name="venue" required [(ngModel)]="form.venue"></label><label>Date and time<input name="date" required type="datetime-local" [(ngModel)]="localDate"></label></fieldset><fieldset><legend>Seating and booking rules</legend><label>Rows<input name="rows" type="number" required min="1" max="26" [(ngModel)]="form.rows"></label><label>Seats per row<input name="cols" type="number" required min="1" max="36" [(ngModel)]="form.cols"></label><label>Hold duration in minutes<input name="minutes" required type="number" min="1" max="60" [(ngModel)]="form.minutes"></label><label>Maximum seats per booking<input name="maximum" type="number" required min="1" [(ngModel)]="form.maximum"></label></fieldset><button class="primary" [disabled]="setup.invalid||busy">Save event</button></form></div>}
+</main><dialog #account aria-labelledby="accountTitle"><div class="auth-brand"><i class="mark" aria-hidden="true"></i>Stagepass</div><button class="close" (click)="account.close()" aria-label="Close">×</button>@if(!state||state.user.guest){<h2 id="accountTitle">{{register?'Create an account':'Welcome back'}}</h2><p>Sign in before booking to access your history across browsers.</p><form (ngSubmit)="login(account)"><label>Name<input required name="name" [(ngModel)]="name" autocomplete="username"></label><label>Password<input required name="password" type="password" [(ngModel)]="password" [attr.autocomplete]="register?'new-password':'current-password'"></label><p role="status">{{message}}</p><button class="primary" [disabled]="busy">{{register?'Sign up':'Sign in'}}</button></form><button class="google-auth" [disabled]="busy" (click)="google()">Continue with Google</button><button class="secondary" (click)="register=!register;password=''">{{register?'Use existing account':'Create attendee account'}}</button>}@else{<h2 id="accountTitle">{{state?.user?.name}}</h2><p>{{state?.user?.role}}</p><button class="secondary" (click)="logout(account)">Sign out</button>}</dialog>

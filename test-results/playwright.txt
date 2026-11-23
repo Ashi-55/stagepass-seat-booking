@@ -1,0 +1,17 @@
+UTC: 2026-11-23 14:48:41Z
+Command: npm run test:browser
+Playwright: 1.65.1
+Browser: Google Chrome
+Exit code: 0
+
+> cardy@1.0.0 test:browser
+> node scripts/check-live.mjs
+
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [InstanceLoader] AppModule dependencies initialized +15ms
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [RoutesResolver] BookingController {/api}: +7ms
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [RouterExplorer] Mapped {/api/changes, GET} route +4ms
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [RouterExplorer] Mapped {/api/state, GET} route +1ms
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [RouterExplorer] Mapped {/api/:operation, POST} route +1ms
+[Nest] 3256  - 11/23/2026, 8:18:55 PM     LOG [NestApplication] Nest application successfully started +2ms
+PASS: cross-browser hold, confirmation, cancellation, account creation and event configuration via SSE.

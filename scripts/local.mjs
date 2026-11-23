@@ -1,0 +1,10 @@
+import {localCluster} from './cluster.mjs';
+const {pg,url}=await localCluster('.pgdata',55438);
+process.env.DATABASE_URL=url;
+process.env.STAGE_ADMIN_PASSWORD??='LocalAdminDemo2026!';
+process.env.STAGE_ORGANIZER_PASSWORD??='StageDemo2026!';
+for(const signal of ['SIGINT','SIGTERM'])process.once(signal,async()=>{await pg.stop();process.exit();});
+const {createApp}=await import('../dist/api/main.js');
+const app=await createApp();
+app.useStaticAssets(new URL('../dist/web/',import.meta.url).pathname.replace(/^\/([A-Z]:)/i,'$1'));
+await app.listen(Number(process.env.PORT??8125),'127.0.0.1');
