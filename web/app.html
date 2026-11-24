@@ -7,7 +7,10 @@
 <div class="auth-actions"><button id="account" class="outline" (click)="showAuth(account,false)">Sign in</button>
 <button class="signup" (click)="showAuth(account,true)">Sign up</button></div>
 }@else{<button id="account" class="outline" (click)="account.showModal()">{{state.user.name}}</button>}</header>
-<main>@if(message){<div id="notice" role="status">{{message}}</div>}
+<main>
+@if(page==='events' && !installed){<div class="install-action"><button type="button" class="outline" (click)="installApp(installHelp)">Install Stagepass</button></div>}
+<dialog #installHelp aria-labelledby="install-title"><h2 id="install-title">Install Stagepass</h2><p><strong>Android Chrome</strong> · Open the ⋮ menu and choose <b>Install and create shortcut → Install</b>. Some versions show <b>Add to home screen</b> or <b>Install app</b>.</p><p><strong>iPhone</strong> · Open Stagepass in Safari, tap <b>Share → Add to Home Screen</b>, then <b>Add</b>.</p><p>If you opened this link inside another app or in Incognito, open it in a regular browser tab first.</p><form method="dialog"><button class="primary" autofocus>Got it</button></form></dialog>
+@if(message){<div id="notice" role="status">{{message}}</div>}
 @if(page==='events' && !state && !message){<p role="status">Loading events…</p>}
 @if(state && page==='events' && state.user.guest){
 <section class="agenda" aria-label="Upcoming events">

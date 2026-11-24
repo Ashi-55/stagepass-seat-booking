@@ -54,7 +54,7 @@ At the deadline a hold expires. Every API operation reconciles overdue holds bef
 
 ## Install Stagepass on a phone
 
-Open [Stagepass](https://stagepass-seat-booking.vercel.app/) in a supported browser. In Android Chrome, open the browser menu and choose **Add to home screen** or **Install app**. In iPhone Safari, open **Share → Add to Home Screen**, enable **Open as Web App** if offered, and tap **Add**. Launch Stagepass from the new icon. Booking and account access require an internet connection. Opening the installed app offline displays a reconnect screen.
+Open [Stagepass](https://stagepass-seat-booking.vercel.app/) in a supported browser. Tap **Install Stagepass** on the Events page. In Android Chrome you can also open **⋮ → Install and create shortcut → Install**. Some versions show **Add to home screen** or **Install app**. In iPhone Safari, open **Share → Add to Home Screen**, enable **Open as Web App** if offered, and tap **Add**. Launch Stagepass from the new icon. Booking and account access require an internet connection. Opening the installed app offline displays a reconnect screen.
 
 ## Tests and demo
 

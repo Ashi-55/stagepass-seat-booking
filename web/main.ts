@@ -7,11 +7,33 @@ import {FormsModule} from '@angular/forms';
 import {photoFor,recommend,suggestSeats} from './discovery';
 import template from './app.html';
 
+interface InstallPrompt extends Event {
+  prompt():Promise<void>;
+  userChoice:Promise<{outcome:'accepted'|'dismissed'}>;
+}
+let pendingInstall:InstallPrompt | undefined;
+window.addEventListener('beforeinstallprompt', event=>{
+  event.preventDefault();
+  pendingInstall=event as InstallPrompt;
+});
+
 interface Show {id:number;name:string;venue:string;genre:string;date:number;rows:number;cols:number;minutes:number;maximum:number}
 interface Booking {id:number;event:number;name:string;venue:string;date:number;seats:string[];status:string;expires:number}
 interface State {user:{name:string;role:string;guest:boolean};events:Show[];claims:{event:number;seat:string;status:string;expires:number|null}[];history:Booking[];now:number}
 @Component({selector:'stagepass-app',standalone:true,imports:[CommonModule,FormsModule],template})
 class App {
+  installed=window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as Navigator & {standalone?:boolean}).standalone===true;
+
+  async installApp(help:HTMLDialogElement){
+    const prompt=pendingInstall;
+    if(!prompt){help.showModal();return;}
+    pendingInstall=undefined;
+    try{
+      await prompt.prompt();
+      await prompt.userChoice;
+    }catch{help.showModal();}
+  }
   partySize=2;
   zone='Middle';
   suggest(){
@@ -76,6 +98,7 @@ class App {
     catch(e){this.note(String(e));}finally{this.busy=false;}
   }
   async ngOnInit(){
+    window.addEventListener('appinstalled',()=>{this.installed=true;pendingInstall=undefined;});
     try {
       const params=new URLSearchParams(location.search);
       if(params.has('code')||params.has('error')){
